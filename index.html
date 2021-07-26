@@ -41,12 +41,17 @@
         }
         preload() {
           this.load.image("bg_shop", "bg_shop.png");
+          this.load.spritesheet("shopper", "./200x300_shopperSprite.png", {
+            frameWidth: 200,
+            frameHeight: 300
+          });
           this.load.image("shopper", "200x300_shopper.png");
         }
         create() {
           currentScene = this.scene;
           let bg001 = this.add.tileSprite(400, 300, 800, 600, "bg_shop");
-          var shopperSprite = this.add.sprite(400, 300, "shopper");
+          targetSprite = this.add.sprite(500, 300, "shopper");
+          targetSprite.setFrame(0);
           msgBox = new messageBox(this);
           messageMode = 99;
           msgBox.show("", "いらっしゃいませ！メニューを選択してね");
@@ -66,32 +71,38 @@
               } else if (clickAns.indexOf("力の種を買う") >= 0) {
                 if (myStatus.GOLD >= 300) {
                   msgBox.show("", "毎度ありがとうございます!");
+                  targetSprite.setFrame(1);
                   myStatus.GOLD = myStatus.GOLD - 300;
                   myStatus.STR = parseInt(myStatus.STR) + 1;
                   myStatusSave();
                   myBox.show(myStatus);
                 } else {
                   msgBox.show("", "Gが足りないみたいだよ");
+                  targetSprite.setFrame(2);
                 }
               } else if (clickAns.indexOf("知の種を買う") >= 0) {
                 if (myStatus.GOLD >= 300) {
                   msgBox.show("", "毎度ありがとうございます!");
+                  targetSprite.setFrame(1);
                   myStatus.GOLD = myStatus.GOLD - 300;
                   myStatus.INT = parseInt(myStatus.INT) + 1;
                   myStatusSave();
                   myBox.show(myStatus);
                 } else {
                   msgBox.show("", "Gが足りないみたいだよ");
+                  targetSprite.setFrame(2);
                 }
               } else if (clickAns.indexOf("HPの種を買う") >= 0) {
                 if (myStatus.GOLD >= 500) {
                   msgBox.show("", "毎度ありがとうございます!");
+                  targetSprite.setFrame(1);
                   myStatus.GOLD = myStatus.GOLD - 500;
                   myStatus.HP = parseInt(myStatus.HP) + 10;
                   myStatusSave();
                   myBox.show(myStatus);
                 } else {
                   msgBox.show("", "Gが足りないみたいだよ");
+                  targetSprite.setFrame(2);
                 }
               }
             }
@@ -118,7 +129,7 @@
           this.load.image("slime", "slime.png");
           this.load.image("golem", "golem.png");
           this.load.image("boss", "dragon.png");
-          this.load.image("lastboss", "lastboss.png");                    
+          this.load.image("lastboss", "lastboss.png");
           this.load.image("chest", "chest.png");
         }
         create() {
@@ -223,53 +234,52 @@
               myRemainHP = myRemainHP - damage;
             }
             checkBattle(result);
-            
           }
         );
       }
-      function checkBattle(result){
+      function checkBattle(result) {
         if (result == 1) {
-              if (tekiStatus[tekiIndex].HP <= 0) {
-                targetSprite.setTexture("chest");
-                msgBox.show(
-                  "こうげき成功！",
-                  "てきをたおした!!" + tekiStatus[tekiIndex].GOLD + "Gをゲット!"
-                );
-                myStatus.GOLD = myStatus.GOLD + tekiStatus[tekiIndex].GOLD;
-                myStatusSave();
-                messageMode = 98;
-              } else {
-                msgBox.show(
-                  "こうげき成功！",
-                  damage +
-                    "のダメージをあたえた\r\n" +
-                    "てきのHP " +
-                    tekiStatus[tekiIndex].HP
-                );
-                messageMode = 99;
-              }
-            } else if (result == 2) {
-              currentObject.cameras.main.shake(500);
-              if (myRemainHP <= 0) {
-                msgBox.show(
-                  "",
-                  tekiStatus[tekiIndex].name + "に倒されて戦闘不能になった..."
-                );
-                myRemainHP = 0;
-              } else {
-                msgBox.show(
-                  "<※こうげきしっぱい!!>",
-                  damage + "のダメージをうけた!!\r\n" + "のこり " + myRemainHP
-                );
-                messageMode = 99;
-              }
-            } else {
-              msgBox.show("", "お互いの攻撃は相殺された！");
-              messageMode = 99;
-            }
-            dialogBox.hide();
+          if (tekiStatus[tekiIndex].HP <= 0) {
+            targetSprite.setTexture("chest");
+            msgBox.show(
+              "こうげき成功！",
+              "てきをたおした!!" + tekiStatus[tekiIndex].GOLD + "Gをゲット!"
+            );
+            myStatus.GOLD = myStatus.GOLD + tekiStatus[tekiIndex].GOLD;
+            myStatusSave();
+            messageMode = 98;
+          } else {
+            msgBox.show(
+              "こうげき成功！",
+              damage +
+                "のダメージをあたえた\r\n" +
+                "てきのHP " +
+                tekiStatus[tekiIndex].HP
+            );
+            messageMode = 99;
+          }
+        } else if (result == 2) {
+          currentObject.cameras.main.shake(500);
+          if (myRemainHP <= 0) {
+            msgBox.show(
+              "",
+              tekiStatus[tekiIndex].name + "に倒されて戦闘不能になった..."
+            );
+            myRemainHP = 0;
+          } else {
+            msgBox.show(
+              "<※こうげきしっぱい!!>",
+              damage + "のダメージをうけた!!\r\n" + "のこり " + myRemainHP
+            );
+            messageMode = 99;
+          }
+        } else {
+          msgBox.show("", "お互いの攻撃は相殺された！");
+          messageMode = 99;
+        }
+        dialogBox.hide();
 
-            myBox.updateHP(myRemainHP, myStatus);
+        myBox.updateHP(myRemainHP, myStatus);
       }
       var tekiSprite, msgBox, dialogBox;
       var myRemainHP = 0;

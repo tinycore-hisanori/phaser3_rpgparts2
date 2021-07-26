@@ -100,6 +100,7 @@
           localforage.getItem("status", function (err, value) {
             if (value != null) {
               myStatus.HP = value.HP;
+              myStatus.STR = value.STR;
               myStatus.INT = value.INT;
               myStatus.GOLD = value.GOLD;
               myBox.show(myStatus);
@@ -221,8 +222,13 @@
               damage = Math.floor((tekiParam * a) / myStatus.DEF);
               myRemainHP = myRemainHP - damage;
             }
-
-            if (result == 1) {
+            checkBattle(result);
+            
+          }
+        );
+      }
+      function checkBattle(result){
+        if (result == 1) {
               if (tekiStatus[tekiIndex].HP <= 0) {
                 targetSprite.setTexture("chest");
                 msgBox.show(
@@ -264,8 +270,6 @@
             dialogBox.hide();
 
             myBox.updateHP(myRemainHP, myStatus);
-          }
-        );
       }
       var tekiSprite, msgBox, dialogBox;
       var myRemainHP = 0;
